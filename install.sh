@@ -229,12 +229,6 @@ done
 
 popd > /dev/null 2>&1
 
-
-bot "Installing vim plugins"
-# cmake is required to compile vim bundle YouCompleteMe
-# require_brew cmake
-vim +PluginInstall +qall > /dev/null 2>&1
-
 bot "installing fonts"
 ./fonts/install.sh
 brew tap caskroom/fonts
@@ -310,88 +304,8 @@ sudo defaults write /Library/Preferences/com.apple.alf globalstate -int 1
 #sudo defaults write /Library/Preferences/com.apple.alf stealthenabled -int 1
 sudo defaults write /Library/Preferences/com.apple.alf stealthenabled -int 1
 
-# Enable firewall logging
-#sudo defaults write /Library/Preferences/com.apple.alf loggingenabled -int 1
-
-# Do not automatically allow signed software to receive incoming connections
-#sudo defaults write /Library/Preferences/com.apple.alf allowsignedenabled -bool false
-
-# Log firewall events for 90 days
-#sudo perl -p -i -e 's/rotate=seq compress file_max=5M all_max=50M/rotate=utc compress file_max=5M ttl=90/g' "/etc/asl.conf"
-#sudo perl -p -i -e 's/appfirewall.log file_max=5M all_max=50M/appfirewall.log rotate=utc compress file_max=5M ttl=90/g' "/etc/asl.conf"
-
-# Reload the firewall
-# (uncomment if above is not commented out)
-#launchctl unload /System/Library/LaunchAgents/com.apple.alf.useragent.plist
-#sudo launchctl unload /System/Library/LaunchDaemons/com.apple.alf.agent.plist
-#sudo launchctl load /System/Library/LaunchDaemons/com.apple.alf.agent.plist
-#launchctl load /System/Library/LaunchAgents/com.apple.alf.useragent.plist
-
-# Disable IR remote control
-#sudo defaults write /Library/Preferences/com.apple.driver.AppleIRController DeviceEnabled -bool false
-
-# Turn Bluetooth off completely
-#sudo defaults write /Library/Preferences/com.apple.Bluetooth ControllerPowerState -int 0
-#sudo launchctl unload /System/Library/LaunchDaemons/com.apple.blued.plist
-#sudo launchctl load /System/Library/LaunchDaemons/com.apple.blued.plist
-
-# Disable wifi captive portal
-#sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.captive.control Active -bool false
-
-# Disable remote apple events
-sudo systemsetup -setremoteappleevents off
-
-# Disable remote login
-sudo systemsetup -setremotelogin off
-
-# Disable wake-on modem
-sudo systemsetup -setwakeonmodem off
-
-# Disable wake-on LAN
-sudo systemsetup -setwakeonnetworkaccess off
-
-# Disable file-sharing via AFP or SMB
-# sudo launchctl unload -w /System/Library/LaunchDaemons/com.apple.AppleFileServer.plist
-# sudo launchctl unload -w /System/Library/LaunchDaemons/com.apple.smbd.plist
-
-# Display login window as name and password
-#sudo defaults write /Library/Preferences/com.apple.loginwindow SHOWFULLNAME -bool true
-
-# Do not show password hints
-#sudo defaults write /Library/Preferences/com.apple.loginwindow RetriesUntilHint -int 0
-
 # Disable guest account login
 sudo defaults write /Library/Preferences/com.apple.loginwindow GuestEnabled -bool false
-
-# Automatically lock the login keychain for inactivity after 6 hours
-#security set-keychain-settings -t 21600 -l ~/Library/Keychains/login.keychain
-
-# Destroy FileVault key when going into standby mode, forcing a re-auth.
-# Source: https://web.archive.org/web/20160114141929/http://training.apple.com/pdf/WP_FileVault2.pdf
-#sudo pmset destroyfvkeyonstandby 1
-
-# Disable Bonjour multicast advertisements
-#sudo defaults write /Library/Preferences/com.apple.mDNSResponder.plist NoMulticastAdvertisements -bool true
-
-# Disable the crash reporter
-#defaults write com.apple.CrashReporter DialogType -string "none"
-
-# Disable diagnostic reports
-#sudo launchctl unload -w /System/Library/LaunchDaemons/com.apple.SubmitDiagInfo.plist
-
-# Log authentication events for 90 days
-#sudo perl -p -i -e 's/rotate=seq file_max=5M all_max=20M/rotate=utc file_max=5M ttl=90/g' "/etc/asl/com.apple.authd"
-
-# Log installation events for a year
-#sudo perl -p -i -e 's/format=bsd/format=bsd mode=0640 rotate=utc compress file_max=5M ttl=365/g' "/etc/asl/com.apple.install"
-
-# Increase the retention time for system.log and secure.log
-#sudo perl -p -i -e 's/\/var\/log\/wtmp.*$/\/var\/log\/wtmp   \t\t\t640\ \ 31\    *\t\@hh24\ \J/g' "/etc/newsyslog.conf"
-
-# Keep a log of kernel events for 30 days
-#sudo perl -p -i -e 's|flags:lo,aa|flags:lo,aa,ad,fd,fm,-all,^-fa,^-fc,^-cl|g' /private/etc/security/audit_control
-#sudo perl -p -i -e 's|filesz:2M|filesz:10M|g' /private/etc/security/audit_control
-#sudo perl -p -i -e 's|expire-after:10M|expire-after: 30d |g' /private/etc/security/audit_control
 
 # Disable the “Are you sure you want to open this application?” dialog
 defaults write com.apple.LaunchServices LSQuarantine -bool false
@@ -403,8 +317,8 @@ defaults write com.apple.LaunchServices LSQuarantine -bool false
 running "Disable local Time Machine snapshots"
 sudo tmutil disablelocal;ok
 
-# running "Disable hibernation (speeds up entering sleep mode)"
-# sudo pmset -a hibernatemode 0;ok
+running "Disable hibernation (speeds up entering sleep mode)"
+sudo pmset -a hibernatemode 0;ok
 
 running "Remove the sleep image file to save disk space"
 sudo rm -rf /Private/var/vm/sleepimage;ok
@@ -413,71 +327,9 @@ sudo touch /Private/var/vm/sleepimage;ok
 running "…and make sure it can’t be rewritten"
 sudo chflags uchg /Private/var/vm/sleepimage;ok
 
-#running "Disable the sudden motion sensor as it’s not useful for SSDs"
-# sudo pmset -a sms 0;ok
-
-################################################
-# Optional / Experimental                      #
-################################################
-
-# running "Set computer name (as done via System Preferences → Sharing)"
-# sudo scutil --set ComputerName "antic"
-# sudo scutil --set HostName "antic"
-# sudo scutil --set LocalHostName "antic"
-# sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName -string "antic"
-
-# running "Disable smooth scrolling"
-# (Uncomment if you’re on an older Mac that messes up the animation)
-# defaults write NSGlobalDomain NSScrollAnimationEnabled -bool false;ok
-
-# running "Disable Resume system-wide"
-# defaults write NSGlobalDomain NSQuitAlwaysKeepsWindows -bool false;ok
-# TODO: might want to enable this again and set specific apps that this works great for
-# e.g. defaults write com.microsoft.word NSQuitAlwaysKeepsWindows -bool true
-
-# running "Fix for the ancient UTF-8 bug in QuickLook (http://mths.be/bbo)""
-# # Commented out, as this is known to cause problems in various Adobe apps :(
-# # See https://github.com/mathiasbynens/dotfiles/issues/237
-# echo "0x08000100:0" > ~/.CFUserTextEncoding;ok
-
-# running "Stop iTunes from responding to the keyboard media keys"
-# launchctl unload -w /System/Library/LaunchAgents/com.apple.rcd.plist 2> /dev/null;ok
-
-# running "Show icons for hard drives, servers, and removable media on the desktop"
-# defaults write com.apple.finder ShowExternalHardDrivesOnDesktop -bool true
-# defaults write com.apple.finder ShowHardDrivesOnDesktop -bool true
-# defaults write com.apple.finder ShowMountedServersOnDesktop -bool true
-# defaults write com.apple.finder ShowRemovableMediaOnDesktop -bool true;ok
-
-# running "Enable the MacBook Air SuperDrive on any Mac"
-# sudo nvram boot-args="mbasd=1";ok
-
-# running "Remove Dropbox’s green checkmark icons in Finder"
-# file=/Applications/Dropbox.app/Contents/Resources/emblem-dropbox-uptodate.icns
-# [ -e "${file}" ] && mv -f "${file}" "${file}.bak";ok
-
-# running "Wipe all (default) app icons from the Dock"
-# # This is only really useful when setting up a new Mac, or if you don’t use
-# # the Dock to launch apps.
-# defaults write com.apple.dock persistent-apps -array "";ok
-
-#running "Enable the 2D Dock"
-#defaults write com.apple.dock no-glass -bool true;ok
-
-#running "Disable the Launchpad gesture (pinch with thumb and three fingers)"
-#defaults write com.apple.dock showLaunchpadGestureEnabled -int 0;ok
-
-#running "Add a spacer to the left side of the Dock (where the applications are)"
-#defaults write com.apple.dock persistent-apps -array-add '{tile-data={}; tile-type="spacer-tile";}';ok
-#running "Add a spacer to the right side of the Dock (where the Trash is)"
-#defaults write com.apple.dock persistent-others -array-add '{tile-data={}; tile-type="spacer-tile";}';ok
-
-
 ################################################
 bot "Standard System Changes"
 ################################################
-#running "always boot in verbose mode (not MacOS GUI mode)"
-#sudo nvram boot-args="-v";ok
 
 running "allow 'locate' command"
 sudo launchctl load -w /System/Library/LaunchDaemons/com.apple.locate.plist > /dev/null 2>&1;ok
@@ -485,28 +337,8 @@ sudo launchctl load -w /System/Library/LaunchDaemons/com.apple.locate.plist > /d
 running "Set standby delay to 24 hours (default is 1 hour)"
 sudo pmset -a standbydelay 86400;ok
 
-#running "Disable the sound effects on boot"
-#sudo nvram SystemAudioVolume=" ";ok
-
 running "Menu bar: disable transparency"
 defaults write NSGlobalDomain AppleEnableMenuBarTransparency -bool false;ok
-
-running "Menu bar: hide the Time Machine, Volume, User, and Bluetooth icons"
-for domain in ~/Library/Preferences/ByHost/com.apple.systemuiserver.*; do
-  defaults write "${domain}" dontAutoLoad -array \
-    "/System/Library/CoreServices/Menu Extras/TimeMachine.menu" \
-    "/System/Library/CoreServices/Menu Extras/Volume.menu" \
-    "/System/Library/CoreServices/Menu Extras/User.menu"
-done;
-defaults write com.apple.systemuiserver menuExtras -array \
-  "/System/Library/CoreServices/Menu Extras/Bluetooth.menu" \
-  "/System/Library/CoreServices/Menu Extras/AirPort.menu" \
-  "/System/Library/CoreServices/Menu Extras/Battery.menu" \
-  "/System/Library/CoreServices/Menu Extras/Clock.menu"
-ok
-
-running "Set highlight color to green"
-defaults write NSGlobalDomain AppleHighlightColor -string "0.764700 0.976500 0.568600";ok
 
 running "Set sidebar icon size to medium"
 defaults write NSGlobalDomain NSTableViewDefaultSizeMode -int 2;ok
@@ -605,10 +437,6 @@ defaults write com.apple.universalaccess closeViewZoomFollowsFocus -bool true;ok
 
 running "Disable press-and-hold for keys in favor of key repeat"
 defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false;ok
-
-running "Set a blazingly fast keyboard repeat rate"
-defaults write NSGlobalDomain KeyRepeat -int 2
-defaults write NSGlobalDomain InitialKeyRepeat -int 10;ok
 
 #running "Set language and text formats (english/US)"
 #defaults write NSGlobalDomain AppleLanguages -array "en"
@@ -753,10 +581,6 @@ defaults write com.apple.dock launchanim -bool false;ok
 running "Speed up Mission Control animations"
 defaults write com.apple.dock expose-animation-duration -float 0.1;ok
 
-running "Don’t group windows by application in Mission Control"
-# (i.e. use the old Exposé behavior instead)
-defaults write com.apple.dock expose-group-by-app -bool false;ok
-
 running "Disable Dashboard"
 defaults write com.apple.dashboard mcx-disabled -bool true;ok
 
@@ -765,11 +589,6 @@ defaults write com.apple.dock dashboard-in-overlay -bool true;ok
 
 running "Don’t automatically rearrange Spaces based on most recent use"
 defaults write com.apple.dock mru-spaces -bool false;ok
-
-running "Remove the auto-hiding Dock delay"
-defaults write com.apple.dock autohide-delay -float 0;ok
-running "Remove the animation when hiding/showing the Dock"
-defaults write com.apple.dock autohide-time-modifier -float 0;ok
 
 running "Automatically hide and show the Dock"
 defaults write com.apple.dock autohide -bool true;ok
@@ -805,71 +624,6 @@ bot "Configuring Hot Corners"
 #running "Bottom right screen corner → Start screen saver"
 #defaults write com.apple.dock wvous-br-corner -int 5
 #defaults write com.apple.dock wvous-br-modifier -int 0;ok
-
-###############################################################################
-bot "Configuring Safari & WebKit"
-###############################################################################
-
-#running "Set Safari’s home page to ‘about:blank’ for faster loading"
-#defaults write com.apple.Safari HomePage -string "about:blank";ok
-
-#running "Prevent Safari from opening ‘safe’ files automatically after downloading"
-#defaults write com.apple.Safari AutoOpenSafeDownloads -bool false;ok
-
-#running "Allow hitting the Backspace key to go to the previous page in history"
-#defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2BackspaceKeyNavigationEnabled -bool true;ok
-
-#running "Hide Safari’s bookmarks bar by default"
-#defaults write com.apple.Safari ShowFavoritesBar -bool false;ok
-
-#running "Hide Safari’s sidebar in Top Sites"
-#defaults write com.apple.Safari ShowSidebarInTopSites -bool false;ok
-
-#running "Disable Safari’s thumbnail cache for History and Top Sites"
-#defaults write com.apple.Safari DebugSnapshotsUpdatePolicy -int 2;ok
-
-#running "Enable Safari’s debug menu"
-#defaults write com.apple.Safari IncludeInternalDebugMenu -bool true;ok
-
-#running "Make Safari’s search banners default to Contains instead of Starts With"
-#defaults write com.apple.Safari FindOnPageMatchesWordStartsOnly -bool false;ok
-
-#running "Remove useless icons from Safari’s bookmarks bar"
-#defaults write com.apple.Safari ProxiesInBookmarksBar "()";ok
-
-#running "Enable the Develop menu and the Web Inspector in Safari"
-#defaults write com.apple.Safari IncludeDevelopMenu -bool true
-#defaults write com.apple.Safari WebKitDeveloperExtrasEnabledPreferenceKey -bool true
-#defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2DeveloperExtrasEnabled -bool true;ok
-
-#running "Add a context menu item for showing the Web Inspector in web views"
-#defaults write NSGlobalDomain WebKitDeveloperExtras -bool true;ok
-
-###############################################################################
-bot "Configuring Mail"
-###############################################################################
-
-
-#running "Disable send and reply animations in Mail.app"
-#defaults write com.apple.mail DisableReplyAnimations -bool true
-#defaults write com.apple.mail DisableSendAnimations -bool true;ok
-
-#running "Copy email addresses as 'foo@example.com' instead of 'Foo Bar <foo@example.com>' in Mail.app"
-#defaults write com.apple.mail AddressesIncludeNameOnPasteboard -bool false;ok
-
-#running "Add the keyboard shortcut ⌘ + Enter to send an email in Mail.app"
-#defaults write com.apple.mail NSUserKeyEquivalents -dict-add "Send" -string "@\\U21a9";ok
-
-#running "Display emails in threaded mode, sorted by date (oldest at the top)"
-#defaults write com.apple.mail DraftsViewerAttributes -dict-add "DisplayInThreadedMode" -string "yes"
-#defaults write com.apple.mail DraftsViewerAttributes -dict-add "SortedDescending" -string "yes"
-#defaults write com.apple.mail DraftsViewerAttributes -dict-add "SortOrder" -string "received-date";ok
-
-#running "Disable inline attachments (just show the icons)"
-#defaults write com.apple.mail DisableInlineAttachmentViewing -bool true;ok
-
-#running "Disable automatic spell checking"
-#defaults write com.apple.mail SpellCheckingBehavior -string "NoSpellCheckingEnabled";ok
 
 ###############################################################################
 bot "Spotlight"
@@ -965,78 +719,6 @@ defaults write com.apple.TimeMachine DoNotOfferNewDisksForBackup -bool true;ok
 
 running "Disable local Time Machine backups"
 hash tmutil &> /dev/null && sudo tmutil disablelocal;ok
-
-###############################################################################
-bot "Activity Monitor"
-###############################################################################
-
-running "Show the main window when launching Activity Monitor"
-defaults write com.apple.ActivityMonitor OpenMainWindow -bool true;ok
-
-running "Visualize CPU usage in the Activity Monitor Dock icon"
-defaults write com.apple.ActivityMonitor IconType -int 5;ok
-
-running "Show all processes in Activity Monitor"
-defaults write com.apple.ActivityMonitor ShowCategory -int 0;ok
-
-running "Sort Activity Monitor results by CPU usage"
-defaults write com.apple.ActivityMonitor SortColumn -string "CPUUsage"
-defaults write com.apple.ActivityMonitor SortDirection -int 0;ok
-
-###############################################################################
-bot "Address Book, Dashboard, iCal, TextEdit, and Disk Utility"
-###############################################################################
-
-#running "Enable the debug menu in Address Book"
-#defaults write com.apple.addressbook ABShowDebugMenu -bool true;ok
-
-#running "Enable Dashboard dev mode (allows keeping widgets on the desktop)"
-#defaults write com.apple.dashboard devmode -bool true;ok
-
-running "Use plain text mode for new TextEdit documents"
-defaults write com.apple.TextEdit RichText -int 0;ok
-running "Open and save files as UTF-8 in TextEdit"
-defaults write com.apple.TextEdit PlainTextEncoding -int 4
-defaults write com.apple.TextEdit PlainTextEncodingForWrite -int 4;ok
-
-#running "Enable the debug menu in Disk Utility"
-#defaults write com.apple.DiskUtility DUDebugMenuEnabled -bool true
-#defaults write com.apple.DiskUtility advanced-image-options -bool true;ok
-
-###############################################################################
-bot "Mac App Store"
-###############################################################################
-
-#running "Enable the WebKit Developer Tools in the Mac App Store"
-#defaults write com.apple.appstore WebKitDeveloperExtras -bool true;ok
-
-#running "Enable Debug Menu in the Mac App Store"
-#defaults write com.apple.appstore ShowDebugMenu -bool true;ok
-
-###############################################################################
-bot "Messages"
-###############################################################################
-
-#running "Disable automatic emoji substitution (i.e. use plain text smileys)"
-#defaults write com.apple.messageshelper.MessageController SOInputLineSettings -dict-add "automaticEmojiSubstitutionEnablediMessage" -bool false;ok
-
-running "Disable smart quotes as it’s annoying for messages that contain code"
-defaults write com.apple.messageshelper.MessageController SOInputLineSettings -dict-add "automaticQuoteSubstitutionEnabled" -bool false;ok
-
-running "Disable continuous spell checking"
-defaults write com.apple.messageshelper.MessageController SOInputLineSettings -dict-add "continuousSpellCheckingEnabled" -bool false;ok
-
-###############################################################################
-bot "SizeUp.app"
-###############################################################################
-
-running "Start SizeUp at login"
-defaults write com.irradiatedsoftware.SizeUp StartAtLogin -bool true;ok
-
-running "Don’t show the preferences window on next start"
-defaults write com.irradiatedsoftware.SizeUp ShowPrefsOnNextStart -bool false;ok
-
-killall cfprefsd
 
 ###############################################################################
 # Kill affected applications                                                  #
